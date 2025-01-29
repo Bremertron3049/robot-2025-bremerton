@@ -1,10 +1,7 @@
 package frc.robot.swervedrive.commands;
 
-import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.swervedrive.SwerveConstants;
@@ -14,20 +11,19 @@ import java.util.function.Supplier;
 
 public class SwerveController extends Command{
     private final SwerveSubsystem SwerveDrive;
-    private final SwerveDriveOdometry Odometry;
+    //private final SwerveDriveOdometry Odometry;
 
     private final Supplier<Double> xSupplier, ySupplier, aSupplier;
     private final Supplier<Boolean> fieldOriented, pointOriented;
     private final Supplier<Pose2d> pointSupplier;
 
-    private final SlewRateLimiter speedLimiter;
+    //private final SlewRateLimiter speedLimiter;
 
     //TODO:
     // - Change use of Odometry to a field-oriented method.
 
-    public SwerveController(SwerveSubsystem SwerveDrive, SwerveDriveOdometry Odometry, Supplier<Double> xSupplier, Supplier<Double> ySupplier, Supplier<Double> aSupplier, Supplier<Boolean> fieldOriented, Supplier<Boolean> pointOriented, Supplier<Pose2d> pointSupplier){
+    public SwerveController(SwerveSubsystem SwerveDrive, Supplier<Double> xSupplier, Supplier<Double> ySupplier, Supplier<Double> aSupplier, Supplier<Boolean> fieldOriented, Supplier<Boolean> pointOriented, Supplier<Pose2d> pointSupplier){
         this.SwerveDrive = SwerveDrive;
-        this.Odometry = Odometry;
 
         this.xSupplier = xSupplier;
         this.ySupplier = ySupplier;
@@ -38,13 +34,11 @@ public class SwerveController extends Command{
 
         this.pointSupplier = pointSupplier;
 
-        speedLimiter = new SlewRateLimiter(SwerveConstants.ROBOT_MAX_SPEED*1.5);
-
         addRequirements(SwerveDrive);
     }
 
     //Returns the input (-1 to 1) required to face the robot to point.
-    public double processPointOriented(double angle, Pose2d point){
+    /*public double processPointOriented(double angle, Pose2d point){
         Pose2d interim = new Pose2d(point.getX(), Odometry.getPoseMeters().getY(), Rotation2d.kZero);
 
         if(interim.getX() - point.getX() == 0){
@@ -59,7 +53,7 @@ public class SwerveController extends Command{
         }
 
         return angle;
-    }
+    }*/
 
     @Override
     public void execute(){
@@ -69,7 +63,7 @@ public class SwerveController extends Command{
         double a = aSupplier.get();
 
         // If pointOriented is true, swap "a" with processed input.
-        a = (pointOriented.get()) ? processPointOriented(a, pointSupplier.get()) : a;
+        //a = (pointOriented.get()) ? processPointOriented(a, pointSupplier.get()) : a;
 
         // Slew limit drive motor motion for smooth driving.
         //y = speedLimiter.calculate(y);
@@ -83,11 +77,7 @@ public class SwerveController extends Command{
         // If fieldOriented is true, creates from field-relative constructor instead.
         ChassisSpeeds chassisSpeeds = (fieldOriented.get()) ? ChassisSpeeds.fromFieldRelativeSpeeds(x, y, a, SwerveDrive.getRotation2d()) : new ChassisSpeeds(x, y, a);
 
-        // Convert chassisSpeeds to SwerveModuleState(s).
-        SwerveModuleState[] moduleStates = SwerveConstants.KINEMATICS.toSwerveModuleStates(chassisSpeeds);
-
-        // Apply SwerveModuleStates to modules.
-        SwerveDrive.setModuleStates(moduleStates);
+        SwerveDrive.driveSwerveDrive(chassisSpeeds);
     }
 
     @Override

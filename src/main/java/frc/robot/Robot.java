@@ -4,27 +4,20 @@
 
 package frc.robot;
 
-import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.swervedrive.SwerveConstants;
-import frc.robot.swervedrive.SwerveSubsystem;
-import frc.robot.util.OdometryI;
+import frc.robot.vision.VisionPositioning;
 
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
 
   private final RobotContainer m_robotContainer;
   
-  private final SwerveSubsystem swerveDrive = SwerveSubsystem.getInstance();
-  private final SwerveDriveOdometry odometry = OdometryI.setInstance(
-        SwerveConstants.KINEMATICS,
-        swerveDrive.getRotation2d(),
-        swerveDrive.getModulePositions()
-  );
+  //private final SwerveSubsystem swerveDrive = SwerveSubsystem.getInstance();
+  
   
   private final Field2d field = new Field2d();
 
@@ -36,9 +29,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotPeriodic() {
-    odometry.update(swerveDrive.getRotation2d(), swerveDrive.getModulePositions());
-
-    field.setRobotPose(odometry.getPoseMeters());
+    field.setRobotPose(VisionPositioning.robotPose.toPose2d());
 
     CommandScheduler.getInstance().run();
   }

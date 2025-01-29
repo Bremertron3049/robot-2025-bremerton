@@ -16,7 +16,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 public class RobotContainer {
   
   private final SwerveSubsystem SwerveDrive = SwerveSubsystem.getInstance();
-  private final SwerveDriveOdometry SwerveOdometry = OdometryI.getInstance();
+  //private final SwerveDriveOdometry SwerveOdometry = OdometryI.getInstance();
 
 
   private final XboxController driveController = new XboxController(0);
@@ -26,7 +26,6 @@ public class RobotContainer {
     //Ties the SwerveController command to the SwerveSubsystem.
     SwerveDrive.setDefaultCommand(new SwerveController(
       SwerveDrive,
-      SwerveOdometry,
       () -> driveController.getLeftY(),
       () -> driveController.getLeftX(),
       () -> driveController.getRightX(),

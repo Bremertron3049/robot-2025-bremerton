@@ -3,6 +3,7 @@ package frc.robot.swervedrive;
 import com.ctre.phoenix6.hardware.Pigeon2;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -71,6 +72,7 @@ public class SwerveSubsystem extends SubsystemBase{
     @Override
     public void periodic() {
         // Telemetry goes here.
+        
     }
 
     //Zeroes the Pigeon2 gyro.
@@ -96,6 +98,12 @@ public class SwerveSubsystem extends SubsystemBase{
             backLeft.getModulePosition(),
             backRight.getModulePosition()
         };
+    }
+
+    public void driveSwerveDrive(ChassisSpeeds speeds){
+        // Convert chassisSpeeds to SwerveModuleState(s).
+        SwerveModuleState[] moduleStates = SwerveConstants.KINEMATICS.toSwerveModuleStates(speeds);
+        setModuleStates(moduleStates);
     }
 
     //Sets each module to a state given an array of states.
