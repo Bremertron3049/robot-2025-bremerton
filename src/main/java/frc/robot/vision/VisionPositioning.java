@@ -2,7 +2,7 @@ package frc.robot.vision;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.swervedrive.SwerveSubsystem;
-import frc.robot.util.OdometryI;
+import frc.robot.util.OdometryInstance;
 
 import org.photonvision.targeting.PhotonPipelineResult;
 
@@ -54,11 +54,11 @@ public class VisionPositioning extends SubsystemBase{
         if(previousEstimates != null){
             for(int i=0;i<Cameras.size();i++){
                 if(estimates.get(i) == previousEstimates.get(i)){
-                    estimates.set(i, OdometryI.convert(previousEstimates.get(i)));
+                    estimates.set(i, OdometryInstance.convert(previousEstimates.get(i)));
                 }
             }
         }
-        OdometryI.zero();
+        OdometryInstance.zero();
         previousEstimates = estimates;
 
         Pose3d closest = null;
